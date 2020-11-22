@@ -3,6 +3,7 @@ const express = require("express");
 const { errorHandlerMiddleware } = require("./middlewares/http-error");
 const sequelize = require("./utils/database");
 const userRoutes = require("./routes/user");
+const surveyRoutes = require("./routes/survey");
 const User = require("./models/user");
 const Survey = require("./models/survey");
 
@@ -23,7 +24,9 @@ app.use((req, res, next) => {
 });
 
 app.use("/users", userRoutes);
+app.use("/surveys", surveyRoutes);
 
+Survey.belongsTo(User, { constraints: true, onDelete: "CASCADE" });
 User.hasMany(Survey);
 
 app.use((req, res, next) => {
@@ -33,7 +36,7 @@ app.use((req, res, next) => {
 app.use(errorHandlerMiddleware);
 
 sequelize
-  .sync({ force: true })
+  .sync()
   .then((response) => {
     console.log("Database Connected");
     app.listen(PORT, () => {
