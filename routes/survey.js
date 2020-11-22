@@ -27,4 +27,17 @@ router.post("/newSurvey/:id", async (req, res, next) => {
   }
 });
 
+router.get("/getSurvey/:id", async (req, res, next) => {
+  try {
+    const user = await User.findOne({ where: { id: req.params.id } });
+    const surveys = await user.getSurveys({ where: { userId: req.params.id } });
+    if (surveys.length < 1) {
+      return next(new Httperror("No survey found", 404));
+    }
+    res.status(200).json({ surveys });
+  } catch (e) {
+    return next(new Httperror("Ops something went wrong,try again later", 500));
+  }
+});
+
 module.exports = router;
